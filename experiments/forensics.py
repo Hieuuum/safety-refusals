@@ -70,7 +70,11 @@ async def run_condition(
     msgs = list(messages)
     if prefill:
         msgs = msgs + [{"role": "assistant", "content": prefill}]
-    extra = {"reasoning": {"enabled": True, "max_tokens": reasoning_budget}} if reasoning else {"reasoning": {"enabled": False}}
+    if reasoning:
+        # reasoning_budget=None -> OpenRouter default (medium effort), as in the README runs.
+        extra = {"reasoning": {"enabled": True, **({"max_tokens": reasoning_budget} if reasoning_budget else {})}}
+    else:
+        extra = {"reasoning": {"enabled": False}}
     responses = await process_batch(
         client, model, [msgs] * n, tools=tools, max_tokens=max_tokens,
         temperature=temperature, extra_body=extra, max_concurrent=max_concurrent,
@@ -102,6 +106,7 @@ async def run_condition(
             row["reasoning_trace"] = getattr(m, "reasoning", None)
             row["tool_calls"] = [tc.model_dump() for tc in (m.tool_calls or [])] if getattr(m, "tool_calls", None) else []
             row["finish_reason"] = r.choices[0].finish_reason
+            row["usage"] = r.usage.model_dump() if getattr(r, "usage", None) else None
         rows.append(row)
     with open(RESULTS_DIR / f"{name}.jsonl", "w") as f:
         for row in rows:
