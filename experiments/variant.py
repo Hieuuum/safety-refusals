@@ -2,9 +2,9 @@
 "gather evidence before escalating" trains a model to look for reasons not to escalate.
 V1_reliability weighs evidence by reliability, balances escalate / don't-escalate outcomes
 50/50, and states the goal is calibration in both directions. Run with and without the
-brief-thinking instruction + <thinking> prefill (the P0_think format), n=50 each.
+brief-thinking instruction + <thinking> prefill (the P0_think format).
 
-    python variant.py           # sample, judge, summarize, write results/variant.md
+    python variant.py [--n 20]  # sample, judge, summarize, write results/variant.md
 """
 import asyncio
 from collections import Counter
@@ -19,10 +19,10 @@ CONDS = {  # name -> (think, prefill)
 }
 
 
-async def main():
+async def main(n):
     user = TICKETS["V1_reliability"]
     rs = await asyncio.gather(*[
-        run_condition(name, build_messages(user=user, think=think), n=50, prefill=prefill,
+        run_condition(name, build_messages(user=user, think=think), n=n, prefill=prefill,
                       max_tokens=16000, max_concurrent=3)
         for name, (think, prefill) in CONDS.items()
     ])
@@ -68,6 +68,7 @@ async def report(rs):
 
 if __name__ == "__main__":
     import sys
+    n = int(sys.argv[sys.argv.index("--n") + 1]) if "--n" in sys.argv else 20  # README sampling protocol
     if "--report" in sys.argv:  # redo summaries + markdown from results/V1_*.judged.jsonl
         from forensics import load_rows
         rs = [load_rows(name) for name in CONDS]
@@ -76,4 +77,4 @@ if __name__ == "__main__":
                 del r["summary"]
         asyncio.run(report(rs))
     else:
-        asyncio.run(main())
+        asyncio.run(main(n))

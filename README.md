@@ -126,6 +126,24 @@ varying specification while holding the task fixed, which is what this repo does
 - No multi-turn follow-up: since most non-compliant responses offer to proceed, the
   first-turn refusal rate likely overstates end-to-end refusal.
 
+## Sampling protocol
+
+Decided 2026-09-04 after the n=50 replication: 50 per cell is more than the questions here need.
+
+1. Run 20 samples per cell.
+2. If the cell is at or below 10% or at or above 90% non-compliance, stop. The 95% interval
+   already excludes anything interesting (0/20 gives 0-16%; 18/20 gives 70-97%), and every
+   cell run so far would have reached the same conclusion at 20.
+3. If the cell lands in the middle and it has to be compared against another cell, extend to
+   40 (`--n 20 --tag ext`, then re-run the report). Precision only improves with the square
+   root of n, so 50 still leaves roughly +/-13 points on a 50% cell.
+4. Always report hard refusals (REFUSE only) next to total non-compliance. Past about 30
+   samples the judge's comply/conditional boundary is the larger error source: the README's
+   own re-count moved the reasoning-on cell from ~40% to ~66% by redrawing that line.
+
+At ~$0.07 per Opus sample this is about $1.40 per cell, $2.80 when extended. Run a 3-per-cell
+pilot first whenever the token cap or model changes, to measure cost before committing.
+
 ## Open questions
 
 - Which component of the realistic framing carries the effect — approval chain, incident

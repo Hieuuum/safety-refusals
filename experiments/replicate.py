@@ -6,7 +6,8 @@ forensics GPT-4.1-mini judge instead of by hand; non-compliant samples are addit
 condensed by the README's Haiku 4.5 summarizer.
 
     python replicate.py run --n 3 --tag pilot    # cheap cost + pipeline check
-    python replicate.py run --n 47 --tag main    # fill each cell to 50
+    python replicate.py run --tag main           # 20 per cell (README sampling protocol)
+    python replicate.py run --n 20 --tag ext     # extend a mid-range cell to 40
     python replicate.py report                   # merge tags, summarize, write results/replication.md
 """
 import argparse
@@ -165,7 +166,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run")
-    r.add_argument("--n", type=int, required=True)
+    r.add_argument("--n", type=int, default=20, help="samples per cell (protocol: 20, extend to 40 if mid-range)")
     r.add_argument("--tag", required=True)
     sub.add_parser("report")
     a = ap.parse_args()
