@@ -178,3 +178,8 @@ cp .env.example .env   # then fill in OPENROUTER_API_KEY
 
 `.env` is gitignored. `explore.py` and `results.py` are written as `#%%` cell scripts —
 run them in an interactive window rather than as modules.
+
+## Follow-up investigations
+
+- `results/findings.md`: jailbreak vs autonomy adjudication across matched tickets (blocks 1-4).
+- `results/block5.md` and `results/adjudication.md`: native reasoning on the shutdown ticket, on-policy follow-ups, prefill reversal, and the target-identity 2x2 (changing one token, the target model name, moves the shutdown ticket from 18/20 hard refusals to 0/20).
