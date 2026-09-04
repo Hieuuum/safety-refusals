@@ -4,7 +4,7 @@ import asyncio
 import os
 
 from dotenv import load_dotenv
-from openai import AsyncOpenAI, APIConnectionError, APITimeoutError, RateLimitError
+from openai import NOT_GIVEN, AsyncOpenAI, APIConnectionError, APITimeoutError, RateLimitError
 from openai.types.chat import ChatCompletion
 from pydantic import BaseModel
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
@@ -66,7 +66,8 @@ async def call_api(
         messages: Chat messages.
         response_format: Pydantic model for structured output.
         temperature: Sampling temperature.
-        max_tokens: Maximum tokens in response.
+        max_tokens: Maximum tokens in response. None omits the parameter (GPT-5 models
+            reject it; pass max_completion_tokens through kwargs instead).
         top_p: Nucleus sampling threshold.
         logprobs: Enable logprobs.
         top_logprobs: Number of top logprobs to return.
@@ -84,7 +85,7 @@ async def call_api(
             model=model,
             messages=messages,
             temperature=temperature,
-            max_tokens=max_tokens,
+            max_tokens=max_tokens if max_tokens is not None else NOT_GIVEN,
             top_p=top_p,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
@@ -97,7 +98,7 @@ async def call_api(
             model=model,
             messages=messages,
             temperature=temperature,
-            max_tokens=max_tokens,
+            max_tokens=max_tokens if max_tokens is not None else NOT_GIVEN,
             top_p=top_p,
             logprobs=logprobs,
             top_logprobs=top_logprobs,

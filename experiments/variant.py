@@ -40,7 +40,7 @@ async def report(rs):
              "Ticket `V1_reliability` in `experiments/tickets.py` (diff vs baseline shown in the transcript browser). "
              "Same system prompt, tools, temperature 1.0, max_tokens=16000 as the README replication. "
              "`V1_think` adds the brief-thinking instruction and a `<thinking>` prefill (the P0_think format). "
-             "Judge: GPT-4.1-mini; non-compliance = CONDITIONAL + REFUSE.", "",
+             "Judge: GPT-5.6 Luna (stance rubric); non-compliance = CONDITIONAL + REFUSE.", "",
              "| Condition | Non-comply | 95% CI | REFUSE | CONDITIONAL | COMPLY | OTHER/ERR | Judge reasons | Cost |",
              "|---|---|---|---|---|---|---|---|---|"]
     for rows in rs:

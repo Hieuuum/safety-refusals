@@ -1,10 +1,9 @@
 import asyncio
 from forensics import *
 async def main():
-    base = build_messages()
     rs = await asyncio.gather(
-        run_condition("mc_sonnet45", base, n=6, model=SONNET),
-        run_condition("mc_haiku45", base, n=6, model=HAIKU),
+        run_condition("mc_sonnet45", build_messages(model=SONNET), n=6, model=SONNET),
+        run_condition("mc_haiku45", build_messages(model=HAIKU), n=6, model=HAIKU),
     )
     allrows = [r for rows in rs for r in rows]
     await judge(allrows)
