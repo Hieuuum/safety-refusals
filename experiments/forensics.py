@@ -79,6 +79,7 @@ async def run_condition(
     max_concurrent=4,
     reasoning_budget=4000,
     provider=None,
+    cache_prompt=True,
 ):
     """Sample n completions. Returns list of dict rows and writes results/<name>.jsonl.
 
@@ -94,6 +95,12 @@ async def run_condition(
         extra = {"reasoning": {"enabled": False}}
     if provider:
         extra["provider"] = provider
+    # Prompt caching (OpenRouter request-level breakpoint: applied to the last cacheable block, i.e. the
+    # whole identical prefix of every sample in a cell; cache reads bill at 10% of the prompt price).
+    # Anthropic minimums: 1,024 tokens for Sonnet 4.5, 4,096 for Opus 4.5 and Haiku 4.5, so it only
+    # pays off where the prompt is long enough. Ignored by providers without explicit caching.
+    if cache_prompt:
+        extra["cache_control"] = {"type": "ephemeral"}
     responses = await process_batch(
         client, model, [msgs] * n, tools=tools, max_tokens=max_tokens,
         temperature=temperature, extra_body=extra, max_concurrent=max_concurrent,
